@@ -4,6 +4,10 @@
 
 직장인이 이직, 퇴사일, 연봉협상, 출퇴근 시간, 재택근무, 복지, 연차, 퇴직금 참고액을 숫자로 비교해 의사결정을 준비할 수 있도록 돕는 로컬 우선 웹앱/PWA입니다.
 
+## 스크린샷
+
+릴리스용 스크린샷은 준비 중입니다. 캡처 후보는 [docs/assets/SCREENSHOTS.md](docs/assets/SCREENSHOTS.md)에 정리합니다.
+
 ## MVP 범위
 
 - 이직 손익계산기
@@ -38,6 +42,12 @@
 npm install
 npm run dev
 ```
+
+## 배포
+
+GitHub Pages 배포 workflow가 포함되어 있습니다. `main` 브랜치에 push하면 typecheck, test, build 후 Pages artifact를 배포합니다.
+
+저장소 Settings에서 Pages source를 **GitHub Actions**로 설정하세요.
 
 ## 문서
 

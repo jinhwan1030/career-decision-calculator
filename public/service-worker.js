@@ -1,5 +1,6 @@
 const cacheName = "career-decision-calculator-v1";
-const appShell = ["/", "/manifest.webmanifest", "/pwa-icon.svg"];
+const scopePath = new URL(self.registration.scope).pathname;
+const appShell = [scopePath, `${scopePath}manifest.webmanifest`, `${scopePath}pwa-icon.svg`];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(cacheName).then((cache) => cache.addAll(appShell)));
@@ -21,7 +22,7 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).catch(() => caches.match("/"));
+      return fetch(event.request).catch(() => caches.match(scopePath));
     }),
   );
 });

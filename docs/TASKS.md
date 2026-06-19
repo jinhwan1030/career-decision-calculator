@@ -50,9 +50,11 @@
 - [x] README에 현재 MVP 기능 목록 갱신
 - [x] 중복 ID import 정책 테스트 추가
 - [x] 경고/주의 변수 테스트 추가
+- [x] 릴리스용 README 스크린샷 자리 표시 추가
+- [x] GitHub Pages 배포 설정 검토
 
 ## 다음 작업
 
-- [ ] 릴리스용 README 스크린샷 자리 표시 추가
-- [ ] GitHub Pages 배포 설정 검토
 - [ ] 저장소 push
+- [ ] GitHub Pages 첫 배포 확인
+- [ ] 실제 스크린샷 추가

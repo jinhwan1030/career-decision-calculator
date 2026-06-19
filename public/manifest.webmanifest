@@ -2,14 +2,15 @@
   "name": "이직 손익계산기",
   "short_name": "이직계산기",
   "description": "이직과 퇴사일 판단을 돕는 로컬 우선 계산기",
-  "start_url": "/",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#f7f4ed",
   "theme_color": "#155e75",
   "lang": "ko-KR",
   "icons": [
     {
-      "src": "/pwa-icon.svg",
+      "src": "pwa-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
