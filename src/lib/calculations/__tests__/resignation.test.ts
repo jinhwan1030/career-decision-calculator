@@ -62,6 +62,7 @@ describe("calculateResignation", () => {
     expect(result.finalSalaryBasisText).toBe("퇴사월 실제 달력일 28일 기준");
     expect(result.estimatedFinalSalary).toBe(1400000);
     expect(result.checklist).not.toContain("남은 연차를 사용할지, 수당으로 받을지 회사 기준을 확인하세요.");
+    expect(result.warnings).toContain("퇴사월 실제 달력일 기준은 회사 급여기간과 다를 수 있습니다.");
 
     vi.useRealTimers();
   });
@@ -93,6 +94,7 @@ describe("calculateResignation", () => {
     expect(result.checklist).toContain("근속 1년 미만이면 일반적인 퇴직금 대상이 아닐 수 있으니 회사 기준을 확인하세요.");
     expect(result.checklist).toContain("이직 전 휴식 기간의 4대보험 공백과 생활비를 함께 확인하세요.");
     expect(result.checklist).toContain("마지막 출근일과 퇴사일 사이의 연차, 급여, 보험 처리 기준을 확인하세요.");
+    expect(result.warnings).toContain("근속 1년 미만의 퇴직금은 일반적인 법정 퇴직금 기준과 다를 수 있습니다.");
 
     vi.useRealTimers();
   });

@@ -103,5 +103,6 @@ describe("calculateJobComparison", () => {
     expect(result.estimatedRemoteWorkValueDifference).toBe(780000);
     expect(result.estimatedNetAnnualGain).toBeCloseTo(23163333.33, 2);
     expect(result.recommendedNegotiationSalary).toBe(60000000);
+    expect(result.warnings).toContain("리스크 버퍼가 0%입니다. 수습기간, 적응 비용, 성과급 불확실성을 보수적으로 따로 검토하세요.");
   });
 });

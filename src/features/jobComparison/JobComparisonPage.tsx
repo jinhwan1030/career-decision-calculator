@@ -3,6 +3,7 @@ import { Button } from "../../components/common/Button";
 import { DeltaBar } from "../../components/charts/DeltaBar";
 import { Field } from "../../components/forms/Field";
 import { Disclaimer } from "../../components/result/Disclaimer";
+import { WarningList } from "../../components/result/WarningList";
 import { defaultAssumptions, defaultCurrentJob, defaultTargetJob } from "../../data/defaults";
 import { calculateJobComparison } from "../../lib/calculations/compensation";
 import { formatKrw, formatManWon } from "../../lib/money/format";
@@ -375,6 +376,7 @@ export function JobComparisonPage({ scenario, onSave }: JobComparisonPageProps) 
           </dl>
         </details>
 
+        <WarningList warnings={result.warnings} />
         <Disclaimer />
       </section>
     </div>

@@ -90,6 +90,21 @@ describe("scenarioStorage", () => {
     );
   });
 
+  it("assigns new ids to duplicated imported scenario ids", () => {
+    vi.stubGlobal("crypto", { randomUUID: () => "new-import-id" });
+    const scenario = createScenario();
+    const rawJson = JSON.stringify({
+      scenarios: [scenario, { ...scenario, title: "복제된 시나리오" }],
+    });
+
+    const data = importAppData(rawJson);
+
+    expect(data.scenarios).toHaveLength(2);
+    expect(data.scenarios[0].id).toBe("scenario-1");
+    expect(data.scenarios[1].id).toBe("new-import-id");
+    expect(data.scenarios[1].input.id).toBe("new-import-id");
+  });
+
   it("clears data back to defaults", () => {
     upsertScenario(createScenario());
 

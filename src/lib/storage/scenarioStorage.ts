@@ -42,8 +42,32 @@ function migrateScenario(scenario: Scenario): Scenario {
   };
 }
 
+function ensureUniqueScenarioIds(scenarios: Scenario[]): Scenario[] {
+  const seen = new Set<string>();
+
+  return scenarios.map((scenario) => {
+    if (!seen.has(scenario.id)) {
+      seen.add(scenario.id);
+      return scenario;
+    }
+
+    const nextId = crypto.randomUUID();
+    seen.add(nextId);
+    return {
+      ...scenario,
+      id: nextId,
+      input: {
+        ...scenario.input,
+        id: nextId,
+      },
+    };
+  });
+}
+
 function migrateAppData(data: Partial<AppData>): AppData {
-  const scenarios = Array.isArray(data.scenarios) ? data.scenarios.map(migrateScenario) : [];
+  const scenarios = Array.isArray(data.scenarios)
+    ? ensureUniqueScenarioIds(data.scenarios.map(migrateScenario))
+    : [];
   return {
     version: currentDataVersion,
     scenarios,

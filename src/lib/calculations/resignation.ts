@@ -73,6 +73,23 @@ export function calculateResignation(input: ResignationInput): ResignationResult
   if (input.lastWorkingDate && input.lastWorkingDate !== input.resignationDate) {
     checklist.push("마지막 출근일과 퇴사일 사이의 연차, 급여, 보험 처리 기준을 확인하세요.");
   }
+  const warnings = [
+    "본 결과는 개인 의사결정을 돕기 위한 참고용 계산입니다.",
+    "퇴직금, 연차수당, 최종 급여는 평균임금, 통상임금, 회사 규정, 세금에 따라 달라질 수 있습니다.",
+    "법률, 세무, 노무 자문이 아닙니다.",
+  ];
+
+  if (!input.dailyWage) {
+    warnings.push("1일 통상임금을 입력하지 않아 월 급여 / 30 기준을 사용합니다.");
+  }
+
+  if (input.finalSalaryProrationMode === "calendar_month") {
+    warnings.push("퇴사월 실제 달력일 기준은 회사 급여기간과 다를 수 있습니다.");
+  }
+
+  if (input.includeSeveranceEstimate && tenureDays < 365) {
+    warnings.push("근속 1년 미만의 퇴직금은 일반적인 법정 퇴직금 기준과 다를 수 있습니다.");
+  }
 
   return {
     tenureDays,
@@ -86,10 +103,6 @@ export function calculateResignation(input: ResignationInput): ResignationResult
     estimatedSeverancePay,
     restDaysBeforeNextJob,
     checklist,
-    warnings: [
-      "본 결과는 개인 의사결정을 돕기 위한 참고용 계산입니다.",
-      "퇴직금, 연차수당, 최종 급여는 평균임금, 통상임금, 회사 규정, 세금에 따라 달라질 수 있습니다.",
-      "법률, 세무, 노무 자문이 아닙니다.",
-    ],
+    warnings,
   };
 }

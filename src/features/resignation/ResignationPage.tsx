@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Button } from "../../components/common/Button";
 import { Field } from "../../components/forms/Field";
 import { Disclaimer } from "../../components/result/Disclaimer";
+import { WarningList } from "../../components/result/WarningList";
 import { calculateResignation } from "../../lib/calculations/resignation";
 import { todayIso } from "../../lib/date/dateUtils";
 import { formatKrw } from "../../lib/money/format";
@@ -258,6 +259,7 @@ export function ResignationPage({ scenario, onSave }: ResignationPageProps) {
           </ul>
         </div>
 
+        <WarningList warnings={result.warnings} />
         <Disclaimer />
       </section>
     </div>

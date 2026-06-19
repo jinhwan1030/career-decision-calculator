@@ -80,6 +80,31 @@ export function calculateJobComparison(input: JobComparisonInput): JobComparison
       : annualCommuteTimeDifferenceHours < 0
         ? "줄어듭니다"
         : "비슷합니다";
+  const warnings = [
+    "본 결과는 개인 의사결정을 돕기 위한 참고용 계산입니다.",
+    "세금, 퇴직금, 연차수당, 실업급여 등은 개인 상황과 회사 기준에 따라 달라질 수 있습니다.",
+    "법률, 세무, 노무 자문이 아닙니다.",
+  ];
+
+  if (!targetJob.monthlyNetIncome || !currentJob.monthlyNetIncome) {
+    warnings.push("월 실수령액을 입력하지 않은 항목은 연봉을 12개월로 나눈 단순값을 사용합니다.");
+  }
+
+  if (annualCommuteTimeDifferenceHours > 0) {
+    warnings.push("후보 직장의 출퇴근 시간이 늘어납니다. 피로도, 교통 변동성, 가족 일정 영향을 함께 확인하세요.");
+  }
+
+  if ((targetJob.remoteDaysPerWeek ?? 0) < (currentJob.remoteDaysPerWeek ?? 0)) {
+    warnings.push("재택근무일이 줄어듭니다. 집중 시간, 돌봄 일정, 생활비 변화를 별도로 확인하세요.");
+  }
+
+  if (annualOvertimeDifferenceHours > 0) {
+    warnings.push("후보 직장의 야근 시간이 늘어납니다. 실제 조직 문화와 피크 시즌 업무량을 확인하세요.");
+  }
+
+  if (assumptions.riskBufferRate === 0) {
+    warnings.push("리스크 버퍼가 0%입니다. 수습기간, 적응 비용, 성과급 불확실성을 보수적으로 따로 검토하세요.");
+  }
 
   return {
     annualSalaryDifference,
@@ -101,10 +126,6 @@ export function calculateJobComparison(input: JobComparisonInput): JobComparison
       `시간가치, 교통비, 복지, 리스크 버퍼를 반영한 실질 결과는 연간 약 ${formatManWon(Math.abs(estimatedNetAnnualGain))} ${gainWord}으로 추정됩니다.`,
       `현재 조건보다 여유 있게 나아지려면 협상 목표 연봉은 최소 ${formatManWon(recommendedNegotiationSalary)} 수준으로 볼 수 있습니다.`,
     ],
-    warnings: [
-      "본 결과는 개인 의사결정을 돕기 위한 참고용 계산입니다.",
-      "세금, 퇴직금, 연차수당, 실업급여 등은 개인 상황과 회사 기준에 따라 달라질 수 있습니다.",
-      "법률, 세무, 노무 자문이 아닙니다.",
-    ],
+    warnings,
   };
 }
