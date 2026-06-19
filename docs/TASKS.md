@@ -53,9 +53,11 @@
 - [x] 릴리스용 README 스크린샷 자리 표시 추가
 - [x] GitHub Pages 배포 설정 검토
 - [x] GitHub Pages 자동 활성화 옵션 추가
+- [x] 저장소 push
+- [x] GitHub Pages 첫 배포 확인
 
 ## 다음 작업
 
-- [ ] 저장소 push
-- [ ] GitHub Pages 첫 배포 확인
 - [ ] 실제 스크린샷 추가
+- [ ] v0.1.0 릴리스 태그 생성
+- [ ] 릴리스 노트 작성
