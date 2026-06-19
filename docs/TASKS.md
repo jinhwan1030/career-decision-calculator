@@ -61,11 +61,11 @@
 - [x] GitHub Pages 비활성화
 - [x] Docker 이미지 로컬 빌드 검증
 - [x] Nginx 컨테이너 로컬 응답 검증
+- [x] GitHub repo secret `DOCKER_PASSWORD` 추가
+- [x] Docker Hub 이미지 첫 push 확인
 
 ## 다음 작업
 
-- [ ] GitHub repo secret `DOCKER_PASSWORD` 추가
-- [ ] Docker Hub 이미지 첫 push 확인
 - [ ] Raspberry Pi에서 compose 실행 확인
 - [ ] 실제 스크린샷 추가
 - [ ] v0.1.0 릴리스 태그 생성
