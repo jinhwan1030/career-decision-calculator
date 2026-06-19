@@ -1,0 +1,9 @@
+services:
+  web:
+    image: legyeseul/career-decision-calculator:latest
+    container_name: career-decision-calculator
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Seoul
+    ports:
+      - "8092:80"

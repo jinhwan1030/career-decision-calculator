@@ -35,6 +35,10 @@ docs/
 
 `public/manifest.webmanifest`와 `public/service-worker.js`를 둔다. 서비스 워커는 프로덕션 빌드에서만 등록하며, 앱 셸의 기본 파일만 캐시한다.
 
+## Raspberry Pi 배포
+
+운영 배포는 GitHub Pages가 아니라 Docker 기반 Raspberry Pi arm64 배포를 기준으로 한다. GitHub Actions는 `linux/amd64`, `linux/arm64` 멀티 아키텍처 이미지를 빌드하고 Docker Hub에 push한다. Raspberry Pi에서는 `docker compose`로 Nginx 정적 컨테이너를 실행한다.
+
 ## 공유
 
 결과 공유는 `src/lib/share`의 브라우저 기본 기능만 사용한다. `navigator.share`가 있으면 네이티브 공유를 열고, 없으면 클립보드에 요약 문구를 복사한다. 외부 API나 분석 SDK는 사용하지 않는다.
