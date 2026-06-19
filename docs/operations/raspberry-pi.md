@@ -15,6 +15,22 @@
 legyeseul/career-decision-calculator:latest
 ```
 
+## GitHub Secrets
+
+GitHub Actions가 Docker Hub에 이미지를 push하려면 이 저장소에 secret을 추가해야 한다.
+
+```text
+DOCKER_PASSWORD
+```
+
+값은 Docker Hub 계정 `legyeseul`의 access token 또는 password다.
+
+저장소 설정 경로:
+
+```text
+GitHub Repository > Settings > Secrets and variables > Actions > New repository secret
+```
+
 ## 런타임
 
 ```bash
@@ -52,3 +68,4 @@ scripts/update-career-decision-calculator.sh
 - `.env`가 필요 없는 정적 앱이다.
 - 결제, 로그인, 서버 DB, AI API를 사용하지 않는다.
 - GitHub Pages 배포는 사용하지 않는다.
+- `DOCKER_PASSWORD` secret이 없으면 Docker Hub 로그인 단계에서 workflow가 실패한다.

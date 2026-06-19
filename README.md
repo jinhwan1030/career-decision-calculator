@@ -51,6 +51,7 @@ Raspberry Pi arm64 배포를 기준으로 Docker 이미지를 빌드합니다.
 - 플랫폼: `linux/amd64`, `linux/arm64`
 - 런타임: Nginx 정적 컨테이너
 - 기본 compose 포트: `8092:80`
+- GitHub Actions secret 필요: `DOCKER_PASSWORD`
 
 자세한 내용은 [Raspberry Pi Deployment](docs/operations/raspberry-pi.md)를 참고하세요.
 
