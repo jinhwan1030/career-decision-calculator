@@ -52,7 +52,45 @@ describe("calculateJobComparison", () => {
     expect(result.estimatedRemoteWorkValueDifference).toBe(-520000);
     expect(result.estimatedRiskBuffer).toBe(5400000);
     expect(result.estimatedNetAnnualGain).toBe(-5920000);
-    expect(result.recommendedNegotiationSalary).toBe(65320000);
+    // 협상 권장 연봉 = 후보 연봉 + 손실 보전액(-netGain). 리스크 버퍼는 netGain에 이미
+    // 반영되어 있으므로 다시 더하지 않는다(이전: 65,320,000 은 버퍼 이중 반영).
+    expect(result.recommendedNegotiationSalary).toBe(59920000);
+    // 손실 보전액만큼 연봉을 올리면 실질 손익이 정확히 0(버퍼 반영 손익분기점)이 된다.
+    expect(result.recommendedNegotiationSalary - input.targetJob.annualSalary).toBe(
+      -result.estimatedNetAnnualGain,
+    );
+  });
+
+  it("falls back to annualSalary/12 when monthlyNetIncome is 0 or empty", () => {
+    const base = {
+      companyName: "기준",
+      annualSalary: 60000000,
+      oneWayCommuteMinutes: 0,
+      officeDaysPerWeek: 5,
+      remoteDaysPerWeek: 0,
+    } as const;
+    const input: JobComparisonInput = {
+      id: "case-fallback",
+      title: "월 실수령액 fallback",
+      createdAt: "2026-06-19T00:00:00.000Z",
+      updatedAt: "2026-06-19T00:00:00.000Z",
+      // monthlyNetIncome 0 은 UI 안내대로 연봉/12 로 대체되어야 한다.
+      currentJob: { ...base, monthlyNetIncome: 0 },
+      // monthlyNetIncome 미입력(undefined)도 동일하게 연봉/12 를 사용한다.
+      targetJob: { ...base },
+      assumptions: {
+        workWeeksPerYear: 52,
+        workDaysPerMonth: 21.75,
+        hourlyValueMode: "salary_based",
+        commuteStressMultiplier: 1,
+        riskBufferRate: 0,
+      },
+    };
+
+    const result = calculateJobComparison(input);
+
+    // 두 직장 모두 연봉/12 를 쓰므로 월 현금 차이는 0 이어야 한다(0 이 그대로 쓰이면 -5,000,000).
+    expect(result.monthlyCashDifference).toBe(0);
   });
 
   it("uses salary-based hourly value when custom hourly value is not selected", () => {

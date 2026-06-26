@@ -67,6 +67,38 @@ describe("calculateResignation", () => {
     vi.useRealTimers();
   });
 
+  it("falls back to monthlySalary/30 when dailyWage is 0 or empty", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-01T00:00:00.000Z"));
+
+    const input: ResignationInput = {
+      id: "resign-fallback",
+      title: "일급 fallback",
+      companyName: "현재",
+      startDate: "2024-06-01",
+      resignationDate: "2026-06-30",
+      monthlySalary: 3000000,
+      salaryDay: 25,
+      remainingLeaveDays: 3,
+      // 빈 입력이 Number("")=0 으로 저장되어도 월 급여/30(=100,000)이 적용되어야 한다.
+      dailyWage: 0,
+      includeLeavePayout: true,
+      includeSeveranceEstimate: false,
+      createdAt: "2026-06-19T00:00:00.000Z",
+      updatedAt: "2026-06-19T00:00:00.000Z",
+    };
+
+    const result = calculateResignation(input);
+
+    // 3,000,000 / 30 * 3 = 300,000 (0 이 그대로 쓰이면 0 이 된다).
+    expect(result.estimatedLeavePayout).toBe(300000);
+    // 30일 기준 일급 정산: 100,000 * min(30, 30) = 3,000,000.
+    expect(result.estimatedFinalSalary).toBe(3000000);
+    expect(result.warnings).toContain("1일 통상임금을 입력하지 않아 월 급여 / 30 기준을 사용합니다.");
+
+    vi.useRealTimers();
+  });
+
   it("adds checklist items for next job and different last working date", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-01T00:00:00.000Z"));

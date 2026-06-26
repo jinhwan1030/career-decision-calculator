@@ -17,6 +17,7 @@ interface DashboardProps {
   onClear: () => void;
   onDelete: (id: string) => void;
   onImport: (rawJson: string) => void;
+  onUndo?: () => void;
 }
 
 export function Dashboard({
@@ -28,8 +29,10 @@ export function Dashboard({
   onClear,
   onDelete,
   onImport,
+  onUndo,
 }: DashboardProps) {
   const [showDataPanel, setShowDataPanel] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
   const [importText, setImportText] = useState("");
   const [importError, setImportError] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,8 +110,16 @@ export function Dashboard({
           </p>
         </div>
         {message && (
-          <div aria-live="polite" className="rounded-md bg-mint px-3 py-2 text-sm font-medium text-ink">
-            {message}
+          <div
+            aria-live="polite"
+            className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-mint px-3 py-2 text-sm font-medium text-ink"
+          >
+            <span>{message}</span>
+            {onUndo && (
+              <Button variant="secondary" onClick={onUndo}>
+                실행 취소
+              </Button>
+            )}
           </div>
         )}
         <div className="flex flex-wrap gap-2">
@@ -119,8 +130,32 @@ export function Dashboard({
           <Button variant="secondary" onClick={() => setShowDataPanel((current) => !current)}>
             JSON 내보내기/가져오기
           </Button>
-          <Button variant="danger" onClick={onClear}>데이터 초기화</Button>
+          {confirmClear ? (
+            <>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  onClear();
+                  setConfirmClear(false);
+                }}
+              >
+                정말 초기화하기
+              </Button>
+              <Button variant="secondary" onClick={() => setConfirmClear(false)}>
+                취소
+              </Button>
+            </>
+          ) : (
+            <Button variant="danger" onClick={() => setConfirmClear(true)}>
+              데이터 초기화
+            </Button>
+          )}
         </div>
+        {confirmClear && (
+          <p className="text-sm font-medium text-coral">
+            저장된 모든 시나리오가 삭제됩니다. 초기화 후에도 잠시 동안 "실행 취소"로 되돌릴 수 있습니다.
+          </p>
+        )}
       </section>
 
       {showDataPanel && (

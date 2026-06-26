@@ -80,6 +80,60 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+/** 선택 입력값: 없으면(undefined) 통과, 있으면 유한한 숫자여야 한다. */
+function isOptionalFiniteNumber(value: unknown): boolean {
+  return value === undefined || isFiniteNumber(value);
+}
+
+function isWorkConditionLike(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  if (typeof value.companyName !== "string") return false;
+  if (!isFiniteNumber(value.annualSalary)) return false;
+  if (!isFiniteNumber(value.oneWayCommuteMinutes)) return false;
+  if (!isFiniteNumber(value.officeDaysPerWeek)) return false;
+  if (!isFiniteNumber(value.remoteDaysPerWeek)) return false;
+  return (
+    isOptionalFiniteNumber(value.monthlyNetIncome) &&
+    isOptionalFiniteNumber(value.annualBonus) &&
+    isOptionalFiniteNumber(value.monthlyBenefit) &&
+    isOptionalFiniteNumber(value.monthlyTransportCost) &&
+    isOptionalFiniteNumber(value.overtimeHoursPerWeek)
+  );
+}
+
+function isAssumptionsLike(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  if (!isFiniteNumber(value.workWeeksPerYear)) return false;
+  if (!isFiniteNumber(value.workDaysPerMonth)) return false;
+  if (value.hourlyValueMode !== "salary_based" && value.hourlyValueMode !== "custom") return false;
+  if (!isFiniteNumber(value.commuteStressMultiplier)) return false;
+  if (!isFiniteNumber(value.riskBufferRate)) return false;
+  return (
+    isOptionalFiniteNumber(value.customHourlyValue) && isOptionalFiniteNumber(value.remoteWorkValuePerDay)
+  );
+}
+
+function isJobComparisonInputLike(input: Record<string, unknown>): boolean {
+  return (
+    isWorkConditionLike(input.currentJob) &&
+    isWorkConditionLike(input.targetJob) &&
+    isAssumptionsLike(input.assumptions)
+  );
+}
+
+function isResignationInputLike(input: Record<string, unknown>): boolean {
+  if (typeof input.startDate !== "string" || typeof input.resignationDate !== "string") return false;
+  if (!isFiniteNumber(input.monthlySalary)) return false;
+  if (!isFiniteNumber(input.salaryDay)) return false;
+  if (typeof input.includeLeavePayout !== "boolean") return false;
+  if (typeof input.includeSeveranceEstimate !== "boolean") return false;
+  return isOptionalFiniteNumber(input.remainingLeaveDays) && isOptionalFiniteNumber(input.dailyWage);
+}
+
 function isScenarioLike(value: unknown): value is Scenario {
   if (!isRecord(value)) return false;
   if (value.type !== "job_comparison" && value.type !== "resignation") return false;
@@ -87,11 +141,9 @@ function isScenarioLike(value: unknown): value is Scenario {
   if (typeof value.createdAt !== "string" || typeof value.updatedAt !== "string") return false;
   if (!isRecord(value.input)) return false;
 
-  if (value.type === "job_comparison") {
-    return isRecord(value.input.currentJob) && isRecord(value.input.targetJob) && isRecord(value.input.assumptions);
-  }
-
-  return typeof value.input.startDate === "string" && typeof value.input.resignationDate === "string";
+  return value.type === "job_comparison"
+    ? isJobComparisonInputLike(value.input)
+    : isResignationInputLike(value.input);
 }
 
 function parseImportData(rawJson: string): AppData {

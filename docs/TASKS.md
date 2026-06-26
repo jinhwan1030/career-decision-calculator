@@ -63,6 +63,12 @@
 - [x] Nginx 컨테이너 로컬 응답 검증
 - [x] GitHub repo secret `DOCKER_PASSWORD` 추가
 - [x] Docker Hub 이미지 첫 push 확인
+- [x] 월 실수령액 0/빈 값 시 연봉/12 fallback 적용
+- [x] 1일 통상임금 0/빈 값 시 월급/30 fallback 적용 (Number("")=0 저장 방지)
+- [x] 주당 출근일+재택일 합 7일 초과 검증 추가
+- [x] 협상 권장 연봉에서 리스크 버퍼 이중 반영 제거
+- [x] JSON import schema validation 강화 (필수 숫자/불리언/모드 검증)
+- [x] 데이터 초기화/삭제에 확인·실행 취소(undo) 흐름 추가
 
 ## 다음 작업
 

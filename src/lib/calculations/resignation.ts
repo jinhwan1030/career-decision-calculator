@@ -1,5 +1,11 @@
 import type { ResignationInput, ResignationResult } from "../../types/resignation";
 import { daysBetween, formatTenure, inclusiveDaysBetween } from "../date/dateUtils";
+import { positiveOrFallback } from "../validation/rules";
+
+/** 1일 통상임금이 비어 있거나 0이면 월 급여 / 30을 사용한다. */
+function resolveDailyWage(input: ResignationInput): number {
+  return positiveOrFallback(input.dailyWage, input.monthlySalary / 30);
+}
 
 function getDaysInMonth(date: Date): number {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -22,7 +28,7 @@ function calculateFinalSalary(input: ResignationInput): {
     };
   }
 
-  const dailyWage = input.dailyWage ?? input.monthlySalary / 30;
+  const dailyWage = resolveDailyWage(input);
   return {
     amount: dailyWage * Math.min(30, settledDays),
     settledDays: Math.min(30, settledDays),
@@ -34,7 +40,7 @@ export function calculateResignation(input: ResignationInput): ResignationResult
   const today = new Date().toISOString().slice(0, 10);
   const tenureDays = inclusiveDaysBetween(input.startDate, input.resignationDate);
   const daysUntilResignation = daysBetween(today, input.resignationDate);
-  const dailyWage = input.dailyWage ?? input.monthlySalary / 30;
+  const dailyWage = resolveDailyWage(input);
   const remainingLeaveDays = input.remainingLeaveDays ?? 0;
   const finalSalary = calculateFinalSalary(input);
   const estimatedLeavePayout = input.includeLeavePayout ? dailyWage * remainingLeaveDays : undefined;

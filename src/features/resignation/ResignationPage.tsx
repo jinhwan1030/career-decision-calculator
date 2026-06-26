@@ -7,7 +7,13 @@ import { calculateResignation } from "../../lib/calculations/resignation";
 import { todayIso } from "../../lib/date/dateUtils";
 import { formatKrw } from "../../lib/money/format";
 import { buildShareText, shareResult } from "../../lib/share/shareText";
-import { isNonNegativeNumber, isPositiveNumber, requiredText } from "../../lib/validation/rules";
+import {
+  isNonNegativeNumber,
+  isPositiveNumber,
+  positiveOrFallback,
+  requiredText,
+  toOptionalNumber,
+} from "../../lib/validation/rules";
 import type { ResignationInput } from "../../types/resignation";
 import type { Scenario } from "../../types/scenario";
 
@@ -76,19 +82,36 @@ export function ResignationPage({ scenario, onSave }: ResignationPageProps) {
   );
   const shareText = useMemo(() => buildShareText(shareTitle, shareLines), [shareLines, shareTitle]);
 
+  // 비워두면 월 급여/30 등 fallback이 적용되어야 하는 선택 입력값.
+  // Number("") === 0 으로 저장되면 fallback이 깨지므로 빈 값은 undefined로 둔다.
+  const optionalNumberFields: ReadonlySet<keyof ResignationInput> = new Set([
+    "dailyWage",
+    "remainingLeaveDays",
+  ]);
+
   const setField = (field: keyof ResignationInput, value: string | boolean) => {
-    setInput((current) => ({
-      ...current,
-      [field]:
+    setInput((current) => {
+      let nextValue: string | number | boolean | undefined;
+      if (
         typeof value === "boolean" ||
         field.includes("Date") ||
         field === "companyName" ||
         field === "title" ||
         field === "finalSalaryProrationMode"
-          ? value
-          : Number(value),
-      updatedAt: new Date().toISOString(),
-    }));
+      ) {
+        nextValue = value;
+      } else if (optionalNumberFields.has(field)) {
+        nextValue = toOptionalNumber(value);
+      } else {
+        nextValue = Number(value);
+      }
+
+      return {
+        ...current,
+        [field]: nextValue,
+        updatedAt: new Date().toISOString(),
+      };
+    });
   };
 
   const saveScenario = () => {
@@ -241,7 +264,9 @@ export function ResignationPage({ scenario, onSave }: ResignationPageProps) {
             </div>
             <div>
               <dt className="text-slate-500">연차수당 기준 일급</dt>
-              <dd className="font-semibold text-ink">{formatKrw(input.dailyWage ?? input.monthlySalary / 30)}</dd>
+              <dd className="font-semibold text-ink">
+                {formatKrw(positiveOrFallback(input.dailyWage, input.monthlySalary / 30))}
+              </dd>
             </div>
             <div>
               <dt className="text-slate-500">퇴사 전 사용 가능 연차</dt>

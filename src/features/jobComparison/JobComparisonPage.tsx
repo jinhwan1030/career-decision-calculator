@@ -51,6 +51,13 @@ function validateJob(job: WorkCondition, label: string): string[] {
   if (!isNonNegativeNumber(job.remoteDaysPerWeek) || job.remoteDaysPerWeek > 7) {
     errors.push(`${label} 주당 재택일은 0일부터 7일 사이여야 합니다.`);
   }
+  if (
+    isNonNegativeNumber(job.officeDaysPerWeek) &&
+    isNonNegativeNumber(job.remoteDaysPerWeek) &&
+    job.officeDaysPerWeek + job.remoteDaysPerWeek > 7
+  ) {
+    errors.push(`${label} 주당 출근일과 재택일의 합은 7일을 넘을 수 없습니다.`);
+  }
   return errors;
 }
 

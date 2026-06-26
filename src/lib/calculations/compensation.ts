@@ -5,6 +5,7 @@ import type {
   WorkCondition,
 } from "../../types/compensation";
 import { formatManWon } from "../money/format";
+import { positiveOrFallback } from "../validation/rules";
 
 function annualCash(job: WorkCondition): number {
   return (
@@ -16,7 +17,8 @@ function annualCash(job: WorkCondition): number {
 }
 
 function monthlyCash(job: WorkCondition): number {
-  const baseMonthly = job.monthlyNetIncome ?? job.annualSalary / 12;
+  // 월 실수령액이 비어 있거나 0이면 UI 안내대로 연봉/12를 사용한다.
+  const baseMonthly = positiveOrFallback(job.monthlyNetIncome, job.annualSalary / 12);
   return baseMonthly + (job.monthlyBenefit ?? 0) - (job.monthlyTransportCost ?? 0);
 }
 
@@ -70,8 +72,11 @@ export function calculateJobComparison(input: JobComparisonInput): JobComparison
     estimatedRemoteWorkValueDifference -
     estimatedRiskBuffer;
   const estimatedNetMonthlyGain = estimatedNetAnnualGain / 12;
+  // 실질 손익(estimatedNetAnnualGain)에는 이미 리스크 버퍼가 차감되어 있다.
+  // 따라서 손실분(-netGain)만 보전하면 버퍼를 반영한 채로 손익분기점에 도달한다.
+  // 여기에 버퍼를 또 더하면 이중 반영되므로 더하지 않는다.
   const recommendedNegotiationSalary =
-    targetJob.annualSalary + Math.max(-estimatedNetAnnualGain, 0) + estimatedRiskBuffer;
+    targetJob.annualSalary + Math.max(-estimatedNetAnnualGain, 0);
 
   const gainWord = estimatedNetAnnualGain >= 0 ? "이득" : "손실";
   const commuteWord =
